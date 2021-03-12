@@ -17,10 +17,16 @@ namespace StackExchange.Opserver.Data.Elastic
         public ElasticSettings.Cluster Settings { get; }
         private string SettingsName => Settings.Name;
 
+        private System.Net.ICredentials Credentials = null;
+
         public ElasticCluster(ElasticSettings.Cluster cluster) : base(cluster.Name)
         {
             Settings = cluster;
-            KnownNodes = cluster.Nodes.Select(n => new ElasticNode(n)).ToList();
+
+            Credentials = null == cluster.Username ? null : new System.Net.NetworkCredential(cluster.Username,
+                System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(cluster.PasswordBase64)));
+
+            KnownNodes = cluster.Nodes.Select(n => new ElasticNode(n, Credentials)).ToList();
         }
 
         public override string NodeType => "elastic";

@@ -22,6 +22,7 @@ namespace StackExchange.Opserver.Data.Elastic
             public int Port { get; set; }
             public string Url { get; set; }
 
+            public ICredentials Credentials { get; private set; }
             public string Name => LastStatus?.Name;
             public string ClusterName => LastStatus?.ClusterName;
             public NodeHomeInfo.VersionInfo Version => LastStatus?.Version;
@@ -30,8 +31,9 @@ namespace StackExchange.Opserver.Data.Elastic
             public Exception LastException { get; private set; }
             public NodeHomeInfo LastStatus { get; set; }
 
-            public ElasticNode(string hostAndPort)
+            public ElasticNode(string hostAndPort, ICredentials cred)
             {
+                Credentials = cred;
                 if (Uri.TryCreate(hostAndPort, UriKind.Absolute, out Uri uri))
                 {
                     Url = uri.ToString();
@@ -72,6 +74,11 @@ namespace StackExchange.Opserver.Data.Elastic
                 var wc = new WebClient();
                 try
                 {
+                    if (Credentials != null)
+                    {
+                        wc.Credentials = Credentials;
+                    }
+
                     using (var rs = await wc.OpenReadTaskAsync(Url + path).ConfigureAwait(false))
                     using (var sr = new StreamReader(rs))
                     {

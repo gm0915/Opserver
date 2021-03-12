@@ -35,6 +35,16 @@ namespace StackExchange.Opserver
             /// How many seconds before polling this cluster for status again, if the cluster status is not green
             /// </summary>
             public int DownRefreshIntervalSeconds { get; set; } = 10;
+
+            /// <summary>
+            /// ElasticSearch username (a la X-Pack)
+            /// </summary>
+            public string Username { get; set; }
+
+            /// <summary>
+            /// ElasticSearch user's password
+            /// </summary>
+            public string PasswordBase64 { get; set; }
         }
     }
 }
